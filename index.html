@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -20,6 +20,7 @@
     header {
       background: linear-gradient(90deg, #1976d2, #0d47a1);
       color: white;
+      text-align: center;
       padding: 20px;
       font-size: 1.5em;
       font-weight: 600;
@@ -30,28 +31,76 @@
       left: 0;
       z-index: 10;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
     }
 
-    .header-content {
-      flex: 1;
-      text-align: center;
-    }
+    .result p {
+  display: flex;
+  justify-content: space-between;
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.5px;
+  font-size: 0.6em;
+  margin: 5px 0;
+}
 
-    .header-button {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
+.result-label {
+  color: #1565c0;
+}
+
+.result-value {
+  font-weight: 600;
+  color: #0d47a1;
+}
+
+
+    .menu-icon {
+      position: absolute;
+      right: 20px;
+      font-size: 1.5em;
       cursor: pointer;
-      font-size: 0.9em;
       transition: 0.3s;
     }
 
-    .header-button:hover {
-      background: rgba(255, 255, 255, 0.3);
+    .menu-icon:hover {
+      transform: scale(1.1);
+      color: #bbdefb;
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -250px;
+      width: 220px;
+      height: 100%;
+      background: linear-gradient(180deg, #1565c0, #0d47a1);
+      box-shadow: -3px 0 10px rgba(0, 0, 0, 0.2);
+      transition: right 0.4s ease;
+      padding-top: 80px;
+      z-index: 20;
+    }
+
+    .side-menu.active {
+      right: 0;
+    }
+
+    .side-menu button {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #e3f2fd;
+      color: #0d47a1;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .side-menu button:hover {
+      background: #bbdefb;
+      transform: scale(1.05);
     }
 
     .card {
@@ -61,6 +110,7 @@
       padding: 35px;
       width: 360px;
       text-align: center;
+      margin-top: 100px;
       transition: 0.3s;
     }
 
@@ -98,7 +148,7 @@
       box-shadow: 0 0 5px #64b5f6;
     }
 
-    button {
+    button.main-btn {
       width: 95%;
       padding: 12px;
       border: none;
@@ -112,7 +162,7 @@
       margin-top: 5px;
     }
 
-    button:hover {
+    button.main-btn:hover {
       background: linear-gradient(90deg, #2196f3, #1565c0);
       transform: scale(1.05);
     }
@@ -147,15 +197,6 @@
       to {opacity: 1; transform: translateY(0);}
     }
 
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: rgba(33, 150, 243, 0.4);
-      border-radius: 3px;
-    }
-
     footer {
       margin-top: 15px;
       font-size: 0.8em;
@@ -166,32 +207,102 @@
 </head>
 <body>
   <header>
-    <div class="header-content">Calculate a Garden</div>
-    <button class="header-button" onclick="toggleFeatures()">Show Features</button>
+    <div class="header-content">Pet Weight Tools </div>
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
   </header>
-  <div class="card" style="margin-top: 100px;">
-    <h1>  Weight Calculator</h1>
 
+  <div class="side-menu" id="sideMenu">
+<button onclick="switchFeature('growth')">🐾 Growth Calculator</button>
+<button onclick="switchFeature('bronto')">🦕 Bronto Calculator</button>
+<button onclick="switchFeature('webhook')">📡 Webhook Viewer</button>
+
+  </div>
+
+  <div class="card" id="mainCard">
+    <!-- default: growth calc -->
+    <h1>Pet Growth Calculator</h1>
     <label>Pet Age (1–100):</label><br>
     <input type="number" id="age" min="1" max="100" value="1"><br>
 
     <label>Base Weight (kg):</label><br>
     <input type="number" id="base" step="0.01" value="1.00"><br>
 
-    <button onclick="calculate()">Calculate</button>
-
+    <button class="main-btn" onclick="calculateGrowth()">Calculate</button>
     <div id="result" class="result"></div>
     <div id="growthTable" class="growth-table"></div>
 
-    <footer>Made with by iPowfuVM</footer>
+    <footer>Made by iPowfuVM</footer>
   </div>
 
   <script>
+    const menu = document.getElementById('sideMenu');
+    const card = document.getElementById('mainCard');
+
+    function toggleMenu() {
+      menu.classList.toggle('active');
+    }
+
+    function switchFeature(type) {
+  menu.classList.remove('active');
+  card.innerHTML = ""; // clear content
+  
+  if (type === 'growth') {
+    card.innerHTML = `
+      <h1>Pet Growth Calculator</h1>
+      <label>Pet Age (1–100):</label><br>
+      <input type="number" id="age" min="1" max="100" value="1"><br>
+      <label>Base Weight (kg):</label><br>
+      <input type="number" id="base" step="0.01" value="1.00"><br>
+      <button class="main-btn" onclick="calculateGrowth()">Calculate</button>
+      <div id="result" class="result"></div>
+      <div id="growthTable" class="growth-table"></div>
+      <footer>Made by iPowfuVM</footer>
+    `;
+  } 
+  
+  else if (type === 'bronto') {
+    card.innerHTML = `
+      <h1>Bronto Bonus Calculator</h1>
+      <label>Base Weight (kg):</label><br>
+      <input type="number" id="brontoBase" step="0.01" value="1.00"><br>
+      <button class="main-btn" onclick="calculateBronto()">Calculate Bonus</button>
+      <div id="result" class="result"></div>
+      <footer>🦕 Giant Incubator effect up to +30%</footer>
+    `;
+  } 
+  
+  // 🔽 tambahin bagian ini persis di bawah blok bronto
+  else if (type === 'webhook') {
+    card.innerHTML = `
+      <h1>📡 Webhook Viewer</h1>
+      <p style="font-size:0.9em;color:#1565c0;">Realtime data dari Telegram/Discord Webhook</p>
+      <div id="webhookData" class="growth-table" style="max-height:300px; overflow-y:auto;">
+        <p>Waiting for webhook data...</p>
+      </div>
+      <footer>🔔 Connected to Webhook System</footer>
+    `;
+
+    // contoh ambil data webhook
+    fetch('/api/webhook-data')
+      .then(res => res.json())
+      .then(data => {
+        const box = document.getElementById('webhookData');
+        box.innerHTML = data.length
+          ? data.map(msg => `<p>${msg}</p>`).join('')
+          : '<p>No data yet.</p>';
+      })
+      .catch(() => {
+        document.getElementById('webhookData').innerHTML = '<p>⚠️ Gagal ambil data webhook.</p>';
+      });
+  }
+}
+
+
     function growthMultiplier(age) {
       return 1 + ((age - 1) / 99) * 9;
     }
 
-    function calculate() {
+    function calculateGrowth() {
       const age = parseInt(document.getElementById("age").value);
       const base = parseFloat(document.getElementById("base").value);
 
@@ -202,31 +313,41 @@
       }
 
       const weight = base * growthMultiplier(age);
-      document.getElementById("result").innerHTML = `
-        <p>Weight Class ${age}: <b>${weight.toFixed(2)} kg</b></p>
-      `;
+      document.getElementById("result").innerHTML = `<p>Age ${age}: <b>${weight.toFixed(2)} kg</b></p>`;
 
       let output = "";
       for (let i = 1; i <= 100; i++) {
         const w = base * growthMultiplier(i);
         output += `<p>Age ${i}: ${w.toFixed(2)} kg</p>`;
       }
-
       document.getElementById("growthTable").innerHTML = output;
     }
 
-    function toggleFeatures() {
-      const button = document.querySelector('.header-button');
-      if (button.textContent === 'Show Features') {
-        button.textContent = 'Hide Features';
-        // Add code to show features here, e.g., display a modal or section
-        alert('Features will be shown here!');
-      } else {
-        button.textContent = 'Show Features';
-        // Add code to hide features here
-        alert('Features hidden!');
-      }
-    }
+    function calculateBronto() {
+  const base = parseFloat(document.getElementById("brontoBase").value);
+  const resultDiv = document.getElementById("result");
+
+  if (isNaN(base) || base <= 0) {
+    resultDiv.innerHTML = "⚠️ Masukkan angka valid!";
+    return;
+  }
+
+  const minBonus = base * 1.052;
+  const maxBonus = base * 1.30;
+
+  resultDiv.innerHTML = `
+    <p><span class="result-label">Without Bonus:</span> <span class="result-value">${base.toFixed(2)} kg</span></p>
+    <p><span class="result-label">Min Bonus (5.2%):</span> <span class="result-value">${minBonus.toFixed(2)} kg</span></p>
+    <p><span class="result-label">Max Bonus (30%):</span> <span class="result-value">${maxBonus.toFixed(2)} kg</span></p>
+    <p style="margin-top:10px; font-size:0.9em; color:#0d47a1;">
+      
+  `;
+}
+
+
   </script>
 </body>
 </html>
+
+
+
